@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+	<!-- Use the .htaccess and remove these lines to avoid edge case issues.
+		 More info: h5bp.com/i/378 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<!-- Our site title and description -->
+	<title>Force MVC | Your Website</title>
+	<meta name="description" content="When your website appears in search results in say Google, the text here will be shown underneath your website's title." />
+	<meta name="keywords" content="place, your, website, keywoards, here, keep, them, related, to, the, content, of, your, website" />
+	<meta name="author" content="Your Name" />
+
+	<!-- Output DocPad produced meta elements -->
+	<meta name="generator" content="DocPad v6.69.2" />
+
+	<!-- Mobile viewport optimized: h5bp.com/viewport -->
+	<meta name="viewport" content="width=device-width" />
+
+	<!-- Icons -->
+		<link rel="shortcut icon" href="images/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/icons/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="images/icons/apple-touch-icon-57-precomposed.png">
+
+	<!-- Shims: IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script async src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<style >html.wait {
+	cursor: wait !important;
+	opacity: 0;
+	transition: opacity 0.5s ease;
+}</style><link  rel="stylesheet" href="/styles/twitter-bootstrap.css" /><link  rel="stylesheet" href="/styles/style.css" />
+</head>
+<body>
+	<nav class="container c-top">
+			<a href="/"><img src="/images/logo.png" /></a> Dart Force 
+	</nav>
+	
+	<div class="c-wrapper c-intro">
+		<header class="c-masthead">
+			<!-- Primary marketing message or call to action -->
+			<div class="jumbotron transparent" style="padding: 0px;">
+				<h1 class="c-heading">Force MVC</h1>
+			</div>
+		</header>
+	</div>
+
+	<!-- Content -->
+	<div class="container">
+		<!-- Content -->
+		<section id="content" class="content">
+			<h4 id="walkthrough">Walkthrough</h4>
+<p>Use a Web Application Server with dart very easily, create controllers with annotations ... similar to java spring mvc.</p>
+<p>First you will setup a new web application.</p>
+<pre><code>WebApplication app = new WebApplication(wsPath: wsPath, port: port, host: host, buildPath: buildPath);
+</code></pre><p>Then you use the &#39;use&#39; method to handle http requests.</p>
+<pre><code>app.use(url, (ForceRequest req, Model model) { /* logic */ }, method: &quot;GET&quot;);
+</code></pre><p>You can also use the annotation RequestMapping in a dart object</p>
+<pre><code>@RequestMapping(value: &quot;/someurl&quot;, method: &quot;GET&quot;)
+void index(ForceRequest req, Model model)
+</code></pre><p>You can also use the annotation @ModelAttribute to add an object to all the scopes in the methods.
+An @ModelAttribute on a method argument indicates the argument should be retrieved from the model. If not present in the model, the argument should be instantiated first and then added to the model. Once present in the model, the argument&#39;s fields should be populated from all request parameters that have matching names.</p>
+<pre><code>@ModelAttribute(&quot;someValue&quot;)
+String someName() {
+    return mv.getValue();
+}
+</code></pre><p>Then you register that object on the WebApplication object.</p>
+<pre><code>app.register(someObjectWithRequestMappingAnnotations)
+</code></pre><p>Or you can annotate a class with @Controller and then it will be registered automatically in the force WebApplication.</p>
+<pre><code>@Controller
+class SomeObject {
+
+}
+</code></pre><h4 id="starting-your-web-application">Starting your web application</h4>
+<p>You can do this as follow!</p>
+<pre><code>app.start();
+</code></pre><p>It is also possible to start a web application with SSL possibilities.</p>
+<pre><code>app.startSecure();
+</code></pre><h4 id="forcerequest">ForceRequest</h4>
+<p>ForceRequest is an extension for HttpRequest</p>
+<pre><code>forceRequest.postData().then((data) =&gt; print(data));
+</code></pre><h4 id="interceptors">Interceptors</h4>
+<p>You can define inteceptors as follow, the framework will pick up all the HandlerInterceptor classes or implementations.</p>
+<pre><code>class RandomInterceptor implements HandlerInterceptor {
+
+  bool preHandle(ForceRequest req, Model model, Object handler) { return true; }
+  void postHandle(ForceRequest req, Model model, Object handler) {}
+  void afterCompletion(ForceRequest req, Model model, Object handler) {}
+
+}
+</code></pre><h4 id="path-variables">Path variables</h4>
+<p>You can now use path variables in force mvc.</p>
+<pre><code>@RequestMapping(value: &quot;/var/{var1}/other/{var2}/&quot;, method: &quot;GET&quot;)
+void pathvariable(ForceRequest req, Model model, String var1, String var2)
+</code></pre><p>This is an alternative way how you can access path variables.</p>
+<pre><code>req.path_variables[&#39;var1&#39;]
+</code></pre><p>You can also use the annotation @PathVariable(&quot;name&quot;) to match the pathvariable, like below:</p>
+<pre><code>  @RequestMapping(value: &quot;/var/{var1}/&quot;, method: &quot;GET&quot;)
+  String multivariable(req, Model model, @PathVariable(&quot;var1&quot;) variable) {}
+</code></pre><h4 id="redirect">Redirect</h4>
+<p>You can instead of returning a view name, performing a redirect as follow:</p>
+<pre><code>@RequestMapping(value: &quot;/redirect/&quot;)
+  String redirect(req, Model model) {
+    redirect++;
+    return &quot;redirect:/viewable/&quot;;
+  }
+</code></pre><h4 id="asynchronous-controller">Asynchronous Controller</h4>
+<p>In the controller you can have asynchronous methods to handle for example POST methods much easier.</p>
+<p>On the ForceRequest object you have a method .async and his value is the return value that matters for the req.</p>
+<p>When a method is asynchrounous you must return req.asyncFuture.</p>
+<p>This is an example how you can use it.</p>
+<pre><code>@RequestMapping(value: &quot;/post/&quot;, method: &quot;POST&quot;)
+Future countMethod(req, Model model) {
+     req.getPostParams().then((map) {
+       model.addAttribute(&quot;email&quot;, map[&quot;email&quot;]);
+
+       req.async(null);
+     });
+     model.addAttribute(&quot;status&quot;, &quot;ok&quot;);
+
+     return req.asyncFuture;
+}
+</code></pre><h4 id="authentication">Authentication</h4>
+<p>You can now add the annotation @Authentication to a controller class. 
+This will make it necessary to for a user to authenticate before accessing these resources.</p>
+<p>An authentication in force is following a strategy.
+You can set a strategy by extending the class SecurityStrategy.</p>
+<pre><code>class SessionStrategy extends SecurityStrategy {
+
+  bool checkAuthorization(HttpRequest req, {data: null}) {
+    HttpSession session = req.session;
+    return (session[&quot;user&quot;]!=null);
+  }   
+
+  Uri getRedirectUri(HttpRequest req) {
+    var referer = req.uri.toString();
+    return Uri.parse(&quot;/login/?referer=$referer&quot;);
+  }
+} 
+</code></pre><p>And then add this strategy to the web application.</p>
+<pre><code>app.strategy = new SessionStrategy();
+</code></pre><h5 id="roles">Roles</h5>
+<p>You can also define authorize roles. This can be done as follow.</p>
+<p>@Controller
+@PreAuthorizeRoles(const [&quot;ADMIN&quot;])
+class AdminController {</p>
+<p>}</p>
+<h5 id="exceptionhandler">ExceptionHandler</h5>
+<p>This helps in defining methods that will be executed when an error or exception occured. </p>
+<pre><code>@ExceptionHandler()
+  String error_catch(req, Model model) {
+      ...
+  }
+</code></pre><p>You can also specify a type, only when an error or exception happend of that Type, that method will be executed.</p>
+<pre><code>@ExceptionHandler(type: DoorLockedError)
+  String doorLockedError(req, Model model) {
+    model.addAttribute(&quot;explanation&quot;, &quot;This is a specific error!&quot;);
+    return &quot;error&quot;;  
+  }
+</code></pre><h4 id="logging">Logging</h4>
+<p>You can easily boostrap logging.</p>
+<pre><code>app.setupConsoleLog();
+</code></pre>
+		</section>
+	</div><!-- /container -->
+
+	<!-- Scripts -->
+	<script >(function(){
+	/* Did we just livereload? */
+var log = !!(localStorage && console && console.log && true);
+if ( log && localStorage.getItem('/docpad-livereload/reloaded') === 'yes' ) {
+	localStorage.removeItem('/docpad-livereload/reloaded');
+	console.log('LiveReload completed at', new Date())
+}
+
+/* Listen for the regenerated event and perform a reload of the page when the event occurs */
+var listen = function(){
+	var primus = new Primus('/docpad-livereload');
+	primus.on('data', function(data){
+		if ( data && data.message ) {
+			if ( data.message === 'generateBefore' ) {
+				if ( log ) {
+					console.log('LiveReload started at', new Date());
+				}
+				if ( typeof document.getElementsByTagName !== 'undefined' ) {
+	document.getElementsByTagName('html')[0].className += ' wait';
+}
+			}
+			else if ( data.message === 'generateAfter' ) {
+				if ( log ) {
+					localStorage.setItem('/docpad-livereload/reloaded', 'yes');
+				}
+				document.location.reload();
+			}
+		}
+	});
+};
+	/* Inject socket into our page */
+var inject = function(){
+	var t = document.createElement('script');
+	t.type = 'text/javascript';
+	t.async = 'async';
+	t.src = '/primus/primus.js';
+	t.onload = listen;
+	var s = document.getElementsByTagName('script')[0];
+	s.parentNode.insertBefore(t, s);
+};
+	if ( typeof Primus !== 'undefined' ) {
+		listen();
+	} else {
+		inject();
+	}
+})();</script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script><script defer="defer"  src="/vendor/twitter-bootstrap/dist/js/bootstrap.min.js"></script><script defer="defer"  src="/scripts/script.js"></script>
+</body>
+</html>

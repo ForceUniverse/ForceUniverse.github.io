@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+	<!-- Use the .htaccess and remove these lines to avoid edge case issues.
+		 More info: h5bp.com/i/378 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<!-- Our site title and description -->
+	<title>Force | Your Website</title>
+	<meta name="description" content="When your website appears in search results in say Google, the text here will be shown underneath your website's title." />
+	<meta name="keywords" content="place, your, website, keywoards, here, keep, them, related, to, the, content, of, your, website" />
+	<meta name="author" content="Your Name" />
+
+	<!-- Output DocPad produced meta elements -->
+	<meta name="generator" content="DocPad v6.69.2" />
+
+	<!-- Mobile viewport optimized: h5bp.com/viewport -->
+	<meta name="viewport" content="width=device-width" />
+
+	<!-- Icons -->
+		<link rel="shortcut icon" href="images/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/icons/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="images/icons/apple-touch-icon-57-precomposed.png">
+
+	<!-- Shims: IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+		<script async src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<style >html.wait {
+	cursor: wait !important;
+	opacity: 0;
+	transition: opacity 0.5s ease;
+}</style><link  rel="stylesheet" href="/styles/twitter-bootstrap.css" /><link  rel="stylesheet" href="/styles/style.css" />
+</head>
+<body>
+	<nav class="container c-top">
+			<a href="/"><img src="/images/logo.png" /></a> Dart Force 
+	</nav>
+	
+	<div class="c-wrapper c-intro">
+		<header class="c-masthead">
+			<!-- Primary marketing message or call to action -->
+			<div class="jumbotron transparent" style="padding: 0px;">
+				<h1 class="c-heading">Force</h1>
+			</div>
+		</header>
+	</div>
+
+	<!-- Content -->
+	<div class="container">
+		<!-- Content -->
+		<section id="content" class="content">
+			<h4 id="introduction">Introduction</h4>
+<p>Dart Force is a Realtime web framework for <a href="http://www.dartlang.org">Dart</a>. We will make it easy for you to create realtime applications with it, like a chat, interactive dashboard, multiplayer games, ...</p>
+<h4 id="how-does-it-work-">How does it work?</h4>
+<h5 id="serverside">Serverside</h5>
+<p>First of all you need a server to handle incoming messages and dispatch or handle this messages correctly.</p>
+<pre><code class="lang-dart">import &quot;package:force/force_serverside.dart&quot;;
+
+ForceServer fs = new ForceServer();
+
+main() {
+  fs.server.use(&quot;/&quot;, (req, model) =&gt; &quot;dartforcetodo&quot;);
+
+  fs.start().then((_) {
+    fs.on(&quot;add&quot;, (vme, sender) {
+      fs.send(&quot;update&quot;, vme.json);
+    });
+  });
+}
+</code></pre>
+<h5 id="clientside">Clientside</h5>
+<p>The client can listen to messages:</p>
+<pre><code class="lang-dart">ForceClient fc;
+void main() {
+  fc = new ForceClient();
+  fc.connect();
+
+  fc.onConnected.listen((e) {
+    fc.on(&quot;update&quot;, (fme, sender) {
+      querySelector(&quot;#list&quot;).appendHtml(&quot;&lt;div&gt;${fme.json[&quot;todo&quot;]}&lt;/div&gt;&quot;);
+    });
+  });
+}
+</code></pre>
+<p>You can also send messages:</p>
+<pre><code class="lang-dart">InputElement input = querySelector(&quot;#input&quot;);
+var data = {&quot;todo&quot;: input.value};
+fc.send(&quot;add&quot;, data);
+</code></pre>
+<p>It is a little bit inspired by <a href="http://socket.io">socket.io</a> for the communication flow.</p>
+
+		</section>
+	</div><!-- /container -->
+
+	<!-- Scripts -->
+	<script >(function(){
+	/* Did we just livereload? */
+var log = !!(localStorage && console && console.log && true);
+if ( log && localStorage.getItem('/docpad-livereload/reloaded') === 'yes' ) {
+	localStorage.removeItem('/docpad-livereload/reloaded');
+	console.log('LiveReload completed at', new Date())
+}
+
+/* Listen for the regenerated event and perform a reload of the page when the event occurs */
+var listen = function(){
+	var primus = new Primus('/docpad-livereload');
+	primus.on('data', function(data){
+		if ( data && data.message ) {
+			if ( data.message === 'generateBefore' ) {
+				if ( log ) {
+					console.log('LiveReload started at', new Date());
+				}
+				if ( typeof document.getElementsByTagName !== 'undefined' ) {
+	document.getElementsByTagName('html')[0].className += ' wait';
+}
+			}
+			else if ( data.message === 'generateAfter' ) {
+				if ( log ) {
+					localStorage.setItem('/docpad-livereload/reloaded', 'yes');
+				}
+				document.location.reload();
+			}
+		}
+	});
+};
+	/* Inject socket into our page */
+var inject = function(){
+	var t = document.createElement('script');
+	t.type = 'text/javascript';
+	t.async = 'async';
+	t.src = '/primus/primus.js';
+	t.onload = listen;
+	var s = document.getElementsByTagName('script')[0];
+	s.parentNode.insertBefore(t, s);
+};
+	if ( typeof Primus !== 'undefined' ) {
+		listen();
+	} else {
+		inject();
+	}
+})();</script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><script defer="defer"  src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script><script defer="defer"  src="/vendor/twitter-bootstrap/dist/js/bootstrap.min.js"></script><script defer="defer"  src="/scripts/script.js"></script>
+</body>
+</html>
